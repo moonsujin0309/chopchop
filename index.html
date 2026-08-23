@@ -104,9 +104,11 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 /* ===== 오늘 ===== */
 .p1-meta{font-size:var(--f-sm);color:var(--t3);font-weight:700;line-height:1.5;}
 .p1-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin:var(--s1) 0 var(--s6);}
-.addbtn{width:44px;height:44px;flex-shrink:0;border:none;border-radius:50%;background:var(--fill);color:var(--t1);
- cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .18s var(--pop-ease),background-color .2s var(--ease);}
-.addbtn svg{width:22px;height:22px;transition:transform .3s var(--pop-ease);}
+.addbtn{flex-shrink:0;min-height:44px;padding:0 var(--s4) 0 var(--s3);border:none;border-radius:var(--r-full);
+ background:var(--greenL);color:var(--greenD);font-family:var(--font);font-size:var(--f-sm);font-weight:900;
+ cursor:pointer;display:flex;align-items:center;gap:var(--s1);white-space:nowrap;
+ transition:transform .18s var(--pop-ease),background-color .2s var(--ease);}
+.addbtn svg{width:19px;height:19px;transition:transform .3s var(--pop-ease);}
 .addbtn:active{transform:scale(.92);}
 .addbtn.open svg{transform:rotate(45deg);}
 .h1{font-size:var(--f-2xl);font-weight:900;color:var(--t1);letter-spacing:-.014em;line-height:1.3;margin-top:var(--s2);}
@@ -360,13 +362,15 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 .cand.solo .cand-chips{opacity:0;}
 .cand-chips{transition:opacity .4s var(--ease);}
 /* 잘려나간 조각이 튀는 느낌 */
-.spark{position:absolute;width:13px;height:13px;background:var(--pop);opacity:0;pointer-events:none;
+.spark{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;background:var(--pop);opacity:0;pointer-events:none;
  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
 .spark.g2{background:var(--green);}
+.spark.big{width:28px;height:28px;margin:-14px 0 0 -14px;}
 .spark.go{animation:spk 1.05s cubic-bezier(.2,.6,.3,1) forwards;}
-@keyframes spk{0%{opacity:1;transform:translate(0,0) scale(.5) rotate(0)}
- 30%{opacity:1;transform:translate(calc(var(--dx)*.5),calc(var(--dy)*.62)) scale(1.15) rotate(90deg)}
- 100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3) rotate(260deg)}}
+@keyframes spk{0%{opacity:0;transform:translate(0,0) scale(.2) rotate(0)}
+ 12%{opacity:1;transform:translate(calc(var(--dx)*.16),calc(var(--dy)*.16)) scale(1.35) rotate(30deg)}
+ 45%{opacity:1;transform:translate(calc(var(--dx)*.62),calc(var(--dy)*.7)) scale(1) rotate(140deg)}
+ 100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.32) rotate(300deg)}}
 .cand-mas{width:64px;height:64px;margin:2px auto 0;flex-shrink:0;background:var(--mascot-img) center/contain no-repeat;}
 .cand-stage{position:relative;height:214px;display:grid;place-items:center;flex-shrink:0;margin-top:2px;
  pointer-events:none;   /* 갈라진 말풍선 반쪽이 칩 위에 남아 탭을 먹고 있었다 */
@@ -393,12 +397,13 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 .thb-tail i:nth-child(2){width:11px;height:11px;margin-left:7px;}
 .thb.split .thb-tail{opacity:0;}
 /* 칼이 지나간 자리 — 네 번, 각도가 다 다르다 */
-.cutline{position:absolute;left:-10%;width:120%;height:4px;border-radius:2px;
- background:var(--t1);opacity:0;transform-origin:left center;pointer-events:none;}
-.cutline.k1{top:50%;--rot:-14deg;}
-.cutline.k2{top:44%;--rot:19deg;}
-.cutline.k3{top:60%;--rot:-4deg;}
-.cutline.k4{top:38%;--rot:-40deg;height:5px;}
+.cutline{position:absolute;left:-7%;width:114%;height:4px;border-radius:2px;
+ background:var(--t1);opacity:0;transform-origin:left center;pointer-events:none;z-index:2;}
+.cutline.k1{top:46%;--rot:-13deg;}
+.cutline.k2{top:40%;--rot:17deg;}
+.cutline.k3{top:62%;--rot:-5deg;}
+.cutline.k4{top:34%;--rot:-34deg;}
+.cutline.k5{top:70%;--rot:26deg;height:5px;}
 .cutline.go{animation:cutl .5s ease-out forwards;}
 @keyframes cutl{0%{opacity:0;transform:rotate(var(--rot)) scaleX(0);}
  22%{opacity:1;transform:rotate(var(--rot)) scaleX(.6);}
@@ -410,6 +415,7 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 .knife.go2{animation:ksl2 .52s cubic-bezier(.4,.02,.28,1) forwards;}
 .knife.go3{animation:ksl3 .48s cubic-bezier(.4,.02,.28,1) forwards;}
 .knife.go4{animation:ksl4 .58s cubic-bezier(.4,.02,.28,1) forwards;}
+.knife.go5{animation:ksl5 .5s cubic-bezier(.4,.02,.28,1) forwards;}
 @keyframes ksl1{0%{opacity:0;transform:translate(-250px,-170px) rotate(-62deg) scale(.7);}
  18%{opacity:1;} 50%{transform:translate(-20px,-10px) rotate(-20deg) scale(1.08);}
  100%{opacity:0;transform:translate(215px,155px) rotate(20deg) scale(.9);}}
@@ -422,6 +428,9 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 @keyframes ksl4{0%{opacity:0;transform:translate(120px,-230px) rotate(8deg) scale(.7);}
  16%{opacity:1;} 52%{transform:translate(24px,-24px) rotate(-38deg) scale(1.1);}
  100%{opacity:0;transform:translate(-150px,215px) rotate(-84deg) scale(.88);}}
+@keyframes ksl5{0%{opacity:0;transform:translate(-140px,240px) rotate(150deg) scale(.7);}
+ 16%{opacity:1;} 52%{transform:translate(-10px,26px) rotate(196deg) scale(1.08);}
+ 100%{opacity:0;transform:translate(160px,-215px) rotate(250deg) scale(.86);}}
 .cand-hint{font-size:var(--f-md);font-weight:700;color:var(--t2);text-align:center;margin:var(--s3) 0 var(--s4);flex-shrink:0;text-wrap:balance;}
 .cand-chips{flex:1;overflow-y:auto;display:flex;flex-wrap:wrap;gap:var(--s2);align-content:flex-start;
  padding-bottom:var(--s3);scrollbar-width:none;}
@@ -442,7 +451,7 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
  color:var(--onGreen);border-radius:var(--r-full);padding:0 var(--s5);font-size:var(--f-base);font-weight:900;cursor:pointer;}
 @keyframes chipIn{from{opacity:0;transform:scale(.55) translateY(14px);}to{opacity:1;transform:none;}}
 .cchip.in{position:relative;}
-.cchip.in::before{content:'';position:absolute;top:-7px;right:-4px;width:14px;height:14px;background:var(--pop);
+.cchip.in::before{content:'';position:absolute;top:-10px;right:-6px;width:20px;height:20px;background:var(--pop);
  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
  opacity:0;pointer-events:none;animation:chipStar .8s ease-out both;animation-delay:inherit;}
 @keyframes chipStar{0%{opacity:0;transform:scale(0) rotate(-40deg);}
@@ -547,7 +556,7 @@ body.dark .tgl::after,body.dark .tg::after,body.dark .sl::-webkit-slider-thumb{b
 
 <div class="pg" id="p1"><div class="px">
 <div class="p1-meta"><span id="dateText"></span></div>
-<div class="p1-head" id="p1Head"><h1 class="h1" id="p1Title">지금 할 찹</h1><button class="addbtn" onclick="tgC()" aria-label="새로 만들기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14m-7-7h14"/></svg></button></div>
+<div class="p1-head" id="p1Head"><h1 class="h1" id="p1Title">지금 할 찹</h1><button class="addbtn" onclick="tgC()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14m-7-7h14"/></svg><span>새 찹찹</span></button></div>
 <div id="t0"></div>
 </div></div>
 
@@ -573,11 +582,12 @@ body.dark .tgl::after,body.dark .tg::after,body.dark .sl::-webkit-slider-thumb{b
   <div class="thb-h c"><span>-</span></div>
   <div class="thb-h d"><span>-</span></div>
   <div class="thb-tail"><i></i><i></i></div>
+  <i class="cutline k1" id="cut1"></i>
+  <i class="cutline k2" id="cut2"></i>
+  <i class="cutline k3" id="cut3"></i>
+  <i class="cutline k4" id="cut4"></i>
+  <i class="cutline k5" id="cut5"></i>
  </div>
- <i class="cutline k1" id="cut1"></i>
- <i class="cutline k2" id="cut2"></i>
- <i class="cutline k3" id="cut3"></i>
- <i class="cutline k4" id="cut4"></i>
  <svg class="knife" id="candKnife" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 46 L38 14 L46 14 L46 22 L16 54 Z" fill="#E3E7EC" stroke="#2E2A24" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 50 L42 18" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity=".8"/><rect x="2" y="46" width="15" height="9" rx="3" transform="rotate(-45 9.5 50.5)" fill="#9A6238" stroke="#2E2A24" stroke-width="2.4"/></svg>
 </div>
 <div class="cand-mas" aria-hidden="true"></div>
@@ -830,28 +840,32 @@ function openCand(){
  document.getElementById('candScr').classList.add('on');
  slashAnim();renderCand();
 }
-// 네 번 자른다. 각도가 매번 다르고, 마지막에 조각이 흩어지며 별이 터진다.
-const SLASH_MS=2300;   // 칩이 이 뒤에 나오도록 맞춘다
-const CUTS=[            // [칼 클래스, 칼 시작, 컷선 id, 컷선 시작, 스파크 개수]
- ['go1',160,'cut1',330,7],
- ['go2',430,'cut2',600,7],
- ['go3',700,'cut3',860,7],
- ['go4',960,'cut4',1150,16]
+// 다섯 번 자른다. 각도가 매번 다르고, 조각이 흩어진 뒤 0.5초 쉬었다가
+// 별이 터지면서 찹이 함께 나온다.
+const SLASH_MS=1900;   // 칩이 이 뒤에 나온다 = 별이 터지는 순간
+const CUTS=[            // [칼 클래스, 칼 시작, 컷선 id, 컷선 시작]
+ ['go1',150,'cut1',290],
+ ['go2',390,'cut2',530],
+ ['go3',630,'cut3',770],
+ ['go4',860,'cut4',1000],
+ ['go5',1080,'cut5',1220]
 ];
+const BURST_AT=1880;    // 조각이 흩어지고(1360) 0.5초 뒤
 let slashAt=0,slashTimers=[];
 function slashLeft(){return Math.max(0,SLASH_MS-(Date.now()-slashAt));}
-function burst(st,count,big){
+// 말풍선 한가운데에서 고르게 퍼뜨린다. 아무 데나 흩뿌리면 화면과 어긋나 보인다.
+function burst(st,count){
  for(let i=0;i<count;i++){
   const p=document.createElement('i');
-  p.className='spark'+(i%2?' g2':'');
-  const ang=(-180+Math.random()*360)*Math.PI/180;
-  const dist=(big?70:44)+Math.random()*(big?90:60);
+  p.className='spark'+(i%2?' g2':'')+(i%3===0?' big':'');
+  const ang=(i/count)*Math.PI*2+(Math.random()-.5)*.34;   // 균등 배치 + 살짝만 흔들기
+  const dist=76+Math.random()*54;
   p.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(0)+'px');
-  p.style.setProperty('--dy',(Math.sin(ang)*dist-(big?10:20)).toFixed(0)+'px');
-  p.style.left=(38+Math.random()*24)+'%';
-  p.style.top=(38+Math.random()*22)+'%';
+  p.style.setProperty('--dy',(Math.sin(ang)*dist*.86).toFixed(0)+'px');
+  p.style.left='50%';p.style.top='48%';                   // 말풍선 중심
+  p.style.animationDelay=(i%4)*26+'ms';
   st.appendChild(p);void p.offsetWidth;p.classList.add('go');
-  setTimeout(()=>p.remove(),1150);
+  setTimeout(()=>p.remove(),1400);
  }
 }
 function slashAnim(){
@@ -859,24 +873,25 @@ function slashAnim(){
        st=document.querySelector('.cand-stage');
  if(!k||!thb||!st)return;
  slashTimers.forEach(clearTimeout);slashTimers=[];
- k.classList.remove('go1','go2','go3','go4');thb.classList.remove('split');   // SVG는 className 대입이 안 먹는다
+ k.classList.remove('go1','go2','go3','go4','go5');   // SVG는 className 대입이 안 먹는다
+ thb.classList.remove('split');
  CUTS.forEach(c=>{const el=document.getElementById(c[2]);if(el)el.classList.remove('go');});
  st.querySelectorAll('.spark').forEach(e=>e.remove());
- void k.offsetWidth;
+ void k.getBoundingClientRect();
  slashAt=Date.now();
  st.classList.remove('gone');
  const scr=document.getElementById('candScr');
  if(scr)scr.classList.add('solo');
  const T=(fn,ms)=>slashTimers.push(setTimeout(fn,ms));
- CUTS.forEach(([cls,kt,cid,ct,sp],idx)=>{
-  T(()=>{k.classList.remove('go1','go2','go3','go4');void k.getBoundingClientRect();k.classList.add(cls);},kt);
+ CUTS.forEach(([cls,kt,cid,ct])=>{
+  T(()=>{k.classList.remove('go1','go2','go3','go4','go5');void k.getBoundingClientRect();k.classList.add(cls);},kt);
   T(()=>{const el=document.getElementById(cid);
-   if(el){el.classList.remove('go');void el.offsetWidth;el.classList.add('go');}
-   burst(st,sp,idx===CUTS.length-1);},ct);
+   if(el){el.classList.remove('go');void el.getBoundingClientRect();el.classList.add('go');}},ct);
  });
- T(()=>thb.classList.add('split'),1290);   // 마지막 칼질과 함께 흩어진다
- T(()=>{const sc=document.getElementById('candScr');if(sc)sc.classList.remove('solo');},1560);
- T(()=>st.classList.add('gone'),2050);
+ T(()=>thb.classList.add('split'),1360);
+ T(()=>{const sc=document.getElementById('candScr');if(sc)sc.classList.remove('solo');},1640);
+ T(()=>burst(st,18),BURST_AT);          // 별과 찹이 같이 나온다
+ T(()=>st.classList.add('gone'),2000);
 }
 function renderCand(){
  const el=document.getElementById('candChips');el.innerHTML='';
