@@ -106,15 +106,15 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 .p1-head{margin:var(--s1) 0 var(--s6);}
 /* 새로 만들기 — 마스코트와 같은 노란 별. 주 버튼(초록)과 색이 겹치지 않는다 */
 .newfab{position:absolute;right:var(--gut);bottom:calc(var(--btab-h) + 16px);z-index:41;
- display:none;align-items:center;gap:var(--s2);min-height:56px;padding:0 var(--s5) 0 var(--s3);
- border:none;border-radius:var(--r-full);background:var(--card);color:var(--t1);
- font-family:var(--font);font-size:var(--f-md);font-weight:900;cursor:pointer;
- outline:2.5px solid var(--pop);outline-offset:-2.5px;
+ display:none;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+ width:96px;height:96px;border:none;border-radius:50%;background:var(--card);color:var(--t1);
+ font-family:var(--font);font-size:var(--f-xs);font-weight:900;letter-spacing:-.01em;cursor:pointer;
+ outline:3px solid var(--pop);outline-offset:-3px;
  transition:transform .18s var(--pop-ease);}
 .newfab.show{display:flex;}
-.newfab:active{transform:scale(.95);}
-.newfab svg{width:30px;height:30px;flex:none;transition:transform .45s var(--pop-ease);}
-.newfab.open svg{transform:rotate(72deg) scale(.88);}
+.newfab:active{transform:scale(.94);}
+.newfab svg{width:46px;height:46px;flex:none;margin-top:-2px;transition:transform .45s var(--pop-ease);}
+.newfab.open svg{transform:rotate(72deg) scale(.86);}
 .h1{font-size:var(--f-2xl);font-weight:900;color:var(--t1);letter-spacing:-.014em;line-height:1.3;margin-top:var(--s2);}
 .now-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pls 2s ease-in-out infinite;flex-shrink:0;}
 /* ===== 세션 카드 =====
@@ -380,7 +380,7 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
  12%{opacity:1;transform:translate(calc(var(--dx)*.16),calc(var(--dy)*.16)) scale(1.35) rotate(30deg)}
  45%{opacity:1;transform:translate(calc(var(--dx)*.62),calc(var(--dy)*.7)) scale(1) rotate(140deg)}
  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.32) rotate(300deg)}}
-.cand-mas{width:64px;height:64px;margin:2px auto 0;flex-shrink:0;background:var(--mascot-img) center/contain no-repeat;}
+.cand-mas{width:180px;height:180px;margin:0 auto;flex-shrink:0;background:var(--mascot-img) center/contain no-repeat;}
 .cand-stage{position:relative;height:214px;display:grid;place-items:center;flex-shrink:0;margin-top:2px;
  pointer-events:none;   /* 갈라진 말풍선 반쪽이 칩 위에 남아 탭을 먹고 있었다 */
  overflow:visible;transition:height .45s var(--ease),margin .45s ease;}
@@ -392,14 +392,14 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
  font-size:var(--f-xl);font-weight:900;color:var(--t1);letter-spacing:-.014em;line-height:1.4;
  outline:1.5px solid var(--line);outline-offset:-1.5px;
  transition:transform 1.15s cubic-bezier(.16,.78,.3,1),opacity 1.05s ease;}
-.thb-h.a{clip-path:polygon(0 0,54% 0,47% 47%,0 43%);}
-.thb-h.b{clip-path:polygon(54% 0,100% 0,100% 41%,47% 47%);}
-.thb-h.c{clip-path:polygon(0 43%,47% 47%,51% 100%,0 100%);}
-.thb-h.d{clip-path:polygon(47% 47%,100% 41%,100% 100%,51% 100%);}
-.thb.split .thb-h.a{transform:translate(-96px,-74px) rotate(-19deg);opacity:0;}
-.thb.split .thb-h.b{transform:translate(98px,-62px) rotate(16deg);opacity:0;}
-.thb.split .thb-h.c{transform:translate(-84px,78px) rotate(-13deg);opacity:0;}
-.thb.split .thb-h.d{transform:translate(92px,86px) rotate(21deg);opacity:0;}
+.thb-h.a{clip-path:polygon(0 2%,0 0,100% 0,100% 13%,50% 50%);}      /* 위 */
+.thb-h.b{clip-path:polygon(100% 13%,100% 98%,50% 50%);}              /* 오른쪽 */
+.thb-h.c{clip-path:polygon(0 87%,50% 50%,100% 98%,100% 100%,0 100%);}/* 아래 */
+.thb-h.d{clip-path:polygon(0 2%,50% 50%,0 87%);}                     /* 왼쪽 */
+.thb.split .thb-h.a{transform:translate(14px,-124px) rotate(-11deg);opacity:0;}
+.thb.split .thb-h.b{transform:translate(138px,26px) rotate(17deg);opacity:0;}
+.thb.split .thb-h.c{transform:translate(-10px,128px) rotate(9deg);opacity:0;}
+.thb.split .thb-h.d{transform:translate(-142px,-18px) rotate(-16deg);opacity:0;}
 .thb-tail{position:absolute;left:16%;bottom:-32px;transition:opacity .3s;}
 .thb-tail i{display:block;background:var(--card);border-radius:50%;outline:1.5px solid var(--line);outline-offset:-1.5px;margin-top:4px;}
 .thb-tail i:nth-child(1){width:17px;height:17px;}
@@ -428,11 +428,18 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
  50%{opacity:1;transform:rotate(var(--kr)) translateX(0px) rotate(45deg) scale(1.12);}
  84%{opacity:1;}
  100%{opacity:0;transform:rotate(var(--kr)) translateX(330px) rotate(45deg) scale(.86);}}
-.cand-src{font-size:var(--f-2xl);font-weight:900;color:var(--t1);text-align:center;letter-spacing:-.018em;
- margin:var(--s4) 0 0;flex-shrink:0;text-wrap:balance;line-height:1.3;}
+.cand-srcw{text-align:center;margin:var(--s2) 0 var(--s5);flex-shrink:0;transition:opacity .4s var(--ease);}
+.cand-src{display:inline-block;position:relative;max-width:92%;
+ background:var(--card);border-radius:var(--r-xl);padding:var(--s3) var(--s5);
+ outline:1.5px solid var(--line);outline-offset:-1.5px;
+ font-size:var(--f-2xl);font-weight:900;color:var(--t1);letter-spacing:-.018em;
+ text-wrap:balance;line-height:1.3;}
+.cand-src::before,.cand-src::after{content:'';position:absolute;left:20px;
+ background:var(--card);border-radius:50%;outline:1.5px solid var(--line);outline-offset:-1.5px;}
+.cand-src::before{bottom:-13px;width:14px;height:14px;}
+.cand-src::after{bottom:-27px;left:28px;width:9px;height:9px;}
 .cand-hint{font-size:var(--f-sm);font-weight:700;color:var(--t3);text-align:center;margin:var(--s1) 0 var(--s4);flex-shrink:0;text-wrap:balance;}
-.cand.solo .cand-src{opacity:0;}
-.cand-src{transition:opacity .4s var(--ease);}
+.cand.solo .cand-srcw{opacity:0;}
 .cand-chips{flex:1;overflow-y:auto;display:flex;flex-wrap:wrap;gap:var(--s2);align-content:flex-start;
  padding-bottom:var(--s3);scrollbar-width:none;}
 .cand-chips::-webkit-scrollbar{display:none;}
@@ -593,7 +600,7 @@ body.dark .tgl::after,body.dark .tg::after,body.dark .sl::-webkit-slider-thumb{b
  </div>
 </div>
 <div class="cand-mas" aria-hidden="true"></div>
-<div class="cand-src" id="candSrc"></div>
+<div class="cand-srcw"><div class="cand-src" id="candSrc"></div></div>
 <div class="cand-hint" id="candHint">해당되는 걸 골라주세요</div>
 <div class="cand-chips" id="candChips"></div>
 <div class="cand-bar">
@@ -639,7 +646,7 @@ body.dark .tgl::after,body.dark .tg::after,body.dark .sl::-webkit-slider-thumb{b
 <button class="cta" id="createBtn" onclick="createItem()">찹찹하기</button>
 </div>
 
-<button class="newfab" id="newFab" onclick="tgC()"><svg viewBox="0 0 80 80" width="30" height="30" aria-hidden="true"><path d="M40 6 Q44 20 56 14 Q52 28 66 28 Q56 36 60 50 Q46 42 40 55 Q34 42 20 50 Q24 36 14 28 Q28 28 24 14 Q36 20 40 6Z" fill="#FFD23F" stroke="#2E2A24" stroke-width="3" stroke-linejoin="round"/><path d="M33 30 Q35 34 37 30M43 30 Q45 34 47 30" fill="none" stroke="#2E2A24" stroke-width="2.6" stroke-linecap="round"/><path d="M35 38 Q40 44 45 38" fill="none" stroke="#2E2A24" stroke-width="2.6" stroke-linecap="round"/></svg><span>새 찹찹</span></button>
+<button class="newfab" id="newFab" onclick="tgC()"><svg viewBox="0 0 80 80" width="46" height="46" aria-hidden="true"><path d="M40 6 Q44 20 56 14 Q52 28 66 28 Q56 36 60 50 Q46 42 40 55 Q34 42 20 50 Q24 36 14 28 Q28 28 24 14 Q36 20 40 6Z" fill="#FFD23F" stroke="#2E2A24" stroke-width="3" stroke-linejoin="round"/><path d="M33 30 Q35 34 37 30M43 30 Q45 34 47 30" fill="none" stroke="#2E2A24" stroke-width="2.6" stroke-linecap="round"/><path d="M35 38 Q40 44 45 38" fill="none" stroke="#2E2A24" stroke-width="2.6" stroke-linecap="round"/></svg><span>새 찹찹</span></button>
 <div class="btab">
 <div class="bt on" onclick="nav('p1',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg><span>홈</span></div>
 <div class="bt" onclick="nav('p2',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>기록</span></div>
