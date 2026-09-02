@@ -1,0 +1,24 @@
+{
+ "name": "찹찹",
+ "short_name": "찹찹",
+ "description": "지금 바로 시작할 일을 잘게 잘라 주는 앱",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#FDF8F0",
+ "theme_color": "#FDF8F0",
+ "lang": "ko",
+ "icons": [
+  {
+   "src": "icon.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}
