@@ -104,9 +104,9 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 /* 로코로코의 언덕. 곡선 지형이 그 게임 화면의 절반이다.
    세 탭 모두 같은 땅 위에 있다. background-attachment 기본값이라 목록을 굴려도 언덕은 화면 아래에 붙어 있다. */
 .pg{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>");
- background-repeat:no-repeat;background-position:center bottom var(--btab-h);background-size:100% auto;}
+ background-repeat:no-repeat;--hill-y:var(--btab-h);animation:hills 19s ease-in-out infinite;}
 /* 결과 화면도 같은 땅 위에 둔다. 탭바가 없는 흐름 화면이라 바닥에 붙는다. */
-#resScr{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>");background-repeat:no-repeat;background-position:center bottom;background-size:100% auto;}
+#resScr{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>");background-repeat:no-repeat;--hill-y:0px;animation:hills 19s ease-in-out infinite;}
 
 .btab{position:absolute;bottom:0;left:0;right:0;height:var(--btab-h);background:var(--bg);border-top:1px solid var(--line);
  display:flex;align-items:flex-start;justify-content:space-around;padding:var(--s1) var(--s6) env(safe-area-inset-bottom, 0px);z-index:40;}
@@ -389,9 +389,33 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 
 /* ===== 달력 ===== */
 
+/* 로코로코 화면은 손을 떼도 계속 꿈틀거린다. 언덕이 아주 느리게 부풀었다 줄고 좌우로 흔들린다.
+   폭을 104% 이상으로 두는 게 핵심 — 100%면 흔들 때 가장자리에 크림색 틈이 생긴다. */
+@keyframes hills{
+ 0%,100%{background-size:106% auto;background-position:left calc(50% - 7px) bottom var(--hill-y);}
+ 50%    {background-size:110% auto;background-position:left calc(50% + 7px) bottom var(--hill-y);}}
+/* 타이머 방울도 숨을 쉰다. 도는 게 아니라 흔들리는 것이라 12시 끝점은 제자리에 있다 */
+@keyframes ringIdle{
+ 0%,100%{transform:rotate(-2.2deg) scale(.994);}
+ 50%    {transform:rotate(2.2deg) scale(1.008);}}
+.tmr-ring svg{animation:ringIdle 6.4s ease-in-out infinite;transform-origin:50% 50%;}
+
 /* ===== 컨페티 ===== */
-.cfp{position:absolute;width:8px;height:12px;top:-14px;z-index:70;border-radius:2px;animation:cf 1.9s ease-in forwards;pointer-events:none;}
-@keyframes cf{to{transform:translateY(860px) rotate(720deg);opacity:.15;}}
+/* 하루에 한 번 볼까 말까 한 장면이라 아낌없이 뿌린다. 조각마다 크기·색·속도·회전이 다르다 —
+   전부 같으면 아무리 많아도 커튼처럼 보인다. 값은 JS가 커스텀 속성으로 꽂는다. */
+.cfp,.cfb{position:absolute;z-index:70;pointer-events:none;will-change:transform;
+ width:var(--w);height:var(--h);background:var(--c);border-radius:var(--r);}
+.cfp{top:-20px;animation:cf var(--d) cubic-bezier(.2,.5,.55,1) var(--dl) forwards;}
+@keyframes cf{
+ 0%{transform:translate3d(0,0,0) rotate(0deg);opacity:1;}
+ 82%{opacity:1;}
+ 100%{transform:translate3d(var(--dx),var(--dy),0) rotate(var(--rz));opacity:0;}}
+/* 터지는 쪽은 끝낸 그 순간의 한 방이다. 밖으로 뻗다가 중력에 끌려 내려간다 */
+.cfb{animation:cfb var(--d) cubic-bezier(.1,.75,.35,1) var(--dl) forwards;}
+@keyframes cfb{
+ 0%{transform:translate3d(0,0,0) scale(.35) rotate(0deg);opacity:1;}
+ 70%{opacity:1;}
+ 100%{transform:translate3d(var(--dx),var(--dy),0) scale(1) rotate(var(--rz));opacity:0;}}
 
 /* ===== 챱챱 후보 고르기 ===== */
 .cand{position:absolute;inset:0;background:var(--bg);z-index:57;display:flex;flex-direction:column;
@@ -553,7 +577,8 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 
 :focus-visible{outline:3px solid var(--greenD);outline-offset:2px;border-radius:4px;}
 @media (prefers-reduced-motion:reduce){
- .knife,.spark,.cfp{display:none!important;}
+ .knife,.spark,.cfp,.cfb{display:none!important;}
+ .pg,#resScr{background-size:100% auto;background-position:center bottom var(--hill-y);}
  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
 </style>
 </head>
@@ -745,7 +770,45 @@ function setLeft(sec){tSec=Math.max(0,Math.round(sec));tEnd=Date.now()+tSec*1000
 function tmrOn(){return document.getElementById('tmr').classList.contains('on');}
 let settings={snd:true,nM:true,nE:false,nW:true};
 function ydk(){const d=new Date();d.setDate(d.getDate()-1);return dk(d);}
-function confetti(){const ph=document.querySelector('.ph');for(let i=0;i<26;i++){const p=document.createElement('div');p.className='cfp';p.style.left=(Math.random()*100)+'%';p.style.background=PAL[i%PAL.length].c;p.style.animationDelay=(Math.random()*.4)+'s';ph.appendChild(p);setTimeout(()=>p.remove(),2500);}}
+// 조각 모양 다섯 가지를 돌려 쓴다. 길쭉한 종이·동그란 알이 섞여야 흩날리는 것처럼 보인다.
+const CF_SHAPE=[[8,13,'2px'],[10,10,'50%'],[6,15,'3px'],[13,7,'2px'],[9,9,'50%'],[7,11,'2px']];
+function cfPiece(cls,host,i){
+ const p=document.createElement('div'),sh=CF_SHAPE[i%CF_SHAPE.length],c=PAL[i%PAL.length];
+ p.className=cls;
+ p.style.setProperty('--w',sh[0]+'px');
+ p.style.setProperty('--h',sh[1]+'px');
+ p.style.setProperty('--r',sh[2]);
+ p.style.setProperty('--c',(i%2)?c.v:c.r);   // 밝은 캔디와 진한 캔디를 번갈아
+ host.appendChild(p);
+ return p;
+}
+function confetti(){
+ const ph=document.querySelector('.ph');if(!ph)return;
+ const H=ph.clientHeight||760;
+ // ① 쏟아지는 것 — 폭 전체에서, 시차를 두고 1.2초에 걸쳐 계속 떨어진다
+ for(let i=0;i<78;i++){
+  const p=cfPiece('cfp',ph,i);
+  p.style.left=(Math.random()*100)+'%';
+  p.style.setProperty('--dx',(Math.random()*180-90)+'px');
+  p.style.setProperty('--dy',(H+140)+'px');
+  p.style.setProperty('--rz',(Math.random()*1440-720)+'deg');
+  p.style.setProperty('--d',(1.7+Math.random()*1.4).toFixed(2)+'s');
+  p.style.setProperty('--dl',(Math.random()*1.2).toFixed(2)+'s');
+  setTimeout(()=>p.remove(),4600);
+ }
+ // ② 터지는 것 — 가운데서 사방으로. 완료 카드 뒤에서 퍼져 나온다
+ for(let i=0;i<30;i++){
+  const p=cfPiece('cfb',ph,i+3);
+  const a=(i/30)*Math.PI*2+(Math.random()*.4-.2),r=120+Math.random()*170;
+  p.style.left='50%';p.style.top='40%';
+  p.style.setProperty('--dx',Math.round(Math.cos(a)*r)+'px');
+  p.style.setProperty('--dy',Math.round(Math.sin(a)*r+260)+'px');
+  p.style.setProperty('--rz',(Math.random()*720-360)+'deg');
+  p.style.setProperty('--d',(1.2+Math.random()*.8).toFixed(2)+'s');
+  p.style.setProperty('--dl',(Math.random()*.14).toFixed(2)+'s');
+  setTimeout(()=>p.remove(),2800);
+ }
+}
 const chk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" style="width:12px;height:12px;"><path d="M5 12l5 5L19 7"/></svg>';
 const bchk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" style="width:16px;height:16px;"><path d="M5 12l5 5L19 7"/></svg>';
 // 10분 미만은 1분 단위로 둔다. 양치 3분, 영양제 2분을 5분이라 부르면 목록 전체가 거짓이 된다.
@@ -768,19 +831,19 @@ const BANKS=[
  {k:['대청소','집 청소','전체 청소'],
   fine:[['바닥 물건 전부 치우기',15],['책상 위 정리하기',10],['청소기 돌리기',15],['화장실 청소하기',15],['쓰레기 모아 버리기',10],['환기하기',2]]},
  {k:['청소','치우'],wide:1,
-  fine:[['바닥 물건 치우기',10],['청소기 돌리기',15],['쓰레기 모아 버리기',4],['걸레질하기',15]]},
+  fine:[['바닥 물건 치우기',10],['청소기 돌리기',15],['쓰레기 모아 버리기',4],['걸레질하기',15],['바닥 머리카락 쓸어 담기',5],['책상 위 닦기',5],['식탁 위 닦기',3],['창틀 먼지 닦기',5],['선반 먼지 닦기',5],['손 닿는 곳 물티슈로 닦기',5],['문손잡이 닦기',3],['쓰레기봉투 새로 끼우기',2],['걸레 빨아 두기',3]]},
  {k:['정리','정돈'],wide:1,
-  fine:[['버릴 것 한 봉지 채우기',15],['책상 위 물건 제자리 놓기',10],['서랍 한 칸만 정리하기',15],['안 쓰는 물건 골라내기',15]]},
+  fine:[['버릴 것 한 봉지 채우기',15],['책상 위 물건 제자리 놓기',10],['같은 종류끼리 모아 두기',10],['서랍 한 칸만 정리하기',15],['안 쓰는 물건 골라내기',15],['눈에 보이는 종이 모으기',5],['필요 없는 종이 버리기',5],['빈 상자 버리기',3],['안 나오는 펜 버리기',3],['케이블 한데 묶기',5],['잡동사니 상자 하나에 모으기',10],['자리 없는 물건 자리 정하기',10],['자주 쓰는 것 손 닿는 곳에 두기',5],['먼지 쌓인 물건 닦아 두기',10]]},
  {k:['빨래','세탁'],
-  fine:[['빨랫감 분류하기',4],['세탁기 돌리기',3],['다 된 빨래 널기',15],['마른 빨래 개기',15]]},
+  fine:[['빨랫감 분류하기',4],['주머니 속 확인하기',3],['세탁기 돌리기',3],['다 된 빨래 널기',15],['마른 빨래 개기',15],['갠 빨래 서랍에 넣기',10],['건조대 펴 두기',2],['수건 따로 모으기',3],['얼룩 부분 애벌빨래하기',5],['속옷 손빨래하기',10],['이불 커버 벗기기',5],['다림질하기',15],['수건 삶기',20],['세탁조 청소 돌리기',5],['세탁기 거름망 비우기',3]]},
  {k:['설거지','그릇','싱크대'],
   fine:[['그릇 물에 담가두기',2],['설거지하기',15],['물기 닦기',5],['그릇 제자리에 넣기',5],['싱크대 닦기',3]]},
  {k:['장보기','장 보','마트','쇼핑'],
-  fine:[['냉장고 비어 있는 것 확인하기',10],['살 것 목록 적기',10],['장 보러 다녀오기',30],['산 것 정리하기',10]]},
+  fine:[['냉장고 비어 있는 것 확인하기',10],['살 것 목록 적기',10],['이번 주 먹을 메뉴 정하기',10],['사야 할 생필품 확인하기',5],['예산 정하기',3],['장바구니 챙기기',2],['장 보러 다녀오기',30],['산 것 정리하기',10],['채소 씻어 두기',10],['고기 소분해 얼리기',15],['영수증 확인하기',3],['빈 장바구니 접어 두기',2],['자주 사는 것 목록 만들기',10],['온라인 장바구니 담기',10],['배송 시간 예약하기',3]]},
  {k:['요리','밥 하','저녁 준비','점심 준비','도시락'],
   fine:[['레시피 확인하기',5],['재료 꺼내기',5],['재료 손질하기',15],['조리하기',20],['그릇에 담기',5],['자리 정리하기',5]]},
  {k:['운동','헬스','스트레칭','요가','달리기'],
-  fine:[['운동복으로 갈아입기',3],['스트레칭 하기',10],['본 운동 한 세트 하기',20],['마무리 스트레칭 하기',10]]},
+  fine:[['운동복으로 갈아입기',3],['물병 채워 두기',2],['스트레칭 하기',10],['제자리 걷기로 몸 데우기',5],['본 운동 한 세트 하기',20],['스쿼트 스무 개 하기',5],['팔굽혀펴기 열 개 하기',5],['플랭크 한 번 버티기',2],['마무리 스트레칭 하기',10],['땀 닦기',3],['매트 펴 두기',1],['오늘 할 동작 정하기',3],['홈트 영상 하나 따라 하기',15],['동네 한 바퀴 걷기',15],['오늘 한 것 기록하기',3]]},
  {k:['공부','과제','시험','강의','복습','숙제','레포트','독후감','발표','조별과제','ppt','제출'],
   fine:[['책상 위 치우기',5],['오늘 할 분량 정하기',5],['강의 자료 훑어보기',15],['교재 한 단원 읽기',20],['핵심 개념 세 개 적기',15],['예제 문제 하나 풀기',20],['모르는 것 표시해 두기',10],['요약 한 장으로 정리하기',20],['제출 기한 확인하기',2],['제출하기',5],['틀린 문제 다시 풀기',20],['필기 다시 옮겨 적기',15],['참고 자료 세 개 찾기',15],['초안 한 문단 쓰기',20],['발표 슬라이드 한 장 만들기',15]]},
  {k:['메일','답장','회신','연락','카톡','문자','전화'],
@@ -790,7 +853,7 @@ const BANKS=[
  {k:['여행','캐리어','출장','배낭','짐 챙기'],
   fine:[['캐리어 꺼내 두기',3],['입을 옷 날짜별로 꺼내기',15],['속옷 챙겨 넣기',5],['세면도구 챙기기',10],['충전기 챙겨 넣기',3],['상비약 챙기기',5],['신분증 확인하기',2],['숙소 예약 내역 저장하기',5],['잠옷 넣기',2],['여벌 신발 넣기',3],['보조배터리 충전하기',2],['우산 챙겨 넣기',2],['짐 무게 재보기',5],['두고 갈 것 골라내기',10],['집 나서기 전 확인 목록 적기',10]]},
  {k:['이사','짐 싸','포장'],
-  fine:[['이사 업체 세 곳 견적 요청하기',20],['짐 목록 적기',15],['안 쓰는 물건 골라내기',20],['상자 포장 시작하기',20]]},
+  fine:[['이사 업체 세 곳 견적 요청하기',20],['짐 목록 적기',15],['안 쓰는 물건 골라내기',20],['상자 포장 시작하기',20],['상자에 방 이름 적기',10],['옷 상자에 담기',15],['책 상자에 담기',15],['깨질 것 신문지로 싸기',10],['이삿짐 상자 주문하기',10],['주소 이전 신청하기',10],['인터넷 이전 신청하기',10],['대형폐기물 신고하기',10],['중요 서류 한 봉투에 모으기',10],['냉장고 음식 비우기',15],['새집 방 크기 재기',10],['이삿날 휴가 신청하기',5]]},
  {k:['사진 정리','갤러리','저장공간','스크린샷','폰 정리'],
   fine:[['스크린샷 전부 지우기',10],['흐린 사진 지우기',10],['중복 사진 골라 지우기',15],['최근 삭제함 비우기',2],['다운로드 폴더 비우기',5],['안 쓰는 앱 지우기',10],['용량 큰 동영상 지우기',15],['카톡 캐시 지우기',3],['사진 클라우드에 백업하기',15],['앨범 하나 만들기',5],['마음에 드는 사진 골라두기',10],['스팸 문자 지우기',3],['연락처 중복 정리하기',10],['메모 앱 훑어 지우기',5]]},
  {k:['화장실','욕실','변기','세면대'],
@@ -1001,7 +1064,7 @@ function renderCand(){
   b.setAttribute('aria-pressed',c.sel?'true':'false');
   // 안 고른 칩도 색 면이다. 흰 알약에 테두리 열넷은 폼처럼 보인다.
   b.style.background=c.sel?'':PAL[i%PAL.length].bg;
-  b.onclick=()=>{cand.items[i].sel=!cand.items[i].sel;renderCand();};
+  b.onclick=()=>{const on=!cand.items[i].sel;cand.items[i].sel=on;sfx(on?'tap':'untap');renderCand();};
   b.innerHTML='<span>'+c.name+'</span>';
   el.appendChild(b);});
  cand.animNew=0;cand.animBase=0;
@@ -1037,7 +1100,7 @@ function loadCand(){
 // 사용자가 원한 건 "다시 쪼개기"가 아니라 "내가 생각 못한 걸 더 보여줘"였다.
 function chopMore(){
  if((cand.depth||0)>=2)return;
- cand.depth++;slashAnim();
+ cand.depth++;slashAnim();sfx('chop');
  const have=cand.items.map(c=>c.name);
  const hint=document.getElementById('candHint');
  hint.textContent=aiOn()?'더 찾아보는 중...':'더 찾아보는 중...';
@@ -1057,7 +1120,7 @@ function appendCand(list,note){
   cand.animNew=0;renderCand();return;}
  cand.animNew=fresh.length;cand.animBase=slashLeft();
  cand.items=fresh.concat(cand.items);
- cand.note=note||'';renderCand();
+ cand.note=note||'';renderCand();sfx('pop');
 }
 async function aiMoreCandidates(title,have){
  let u='제목: '+title+'\n사용자가 지금 당장 시작해서 한 번에 끝내려는 일입니다.';
@@ -1084,7 +1147,7 @@ function candDone(){
  const snap=Math.max(5,Math.ceil(sum/5)*5);
  wSel={h:Math.min(H_VALS.length-1,Math.floor(snap/60)),
        m:Math.min(M_VALS.length-1,Math.round((snap-Math.min(5,Math.floor(snap/60))*60)/5))};
- cand.step='time';renderCand();
+ cand.step='time';renderCand();sfx('go');
 }
 function backToPick(){cand.step='pick';renderCand();}
 // 좌상단 뒤로는 항상 같은 자리에 있고, 문맥에 따라 한 단계씩 물러난다
@@ -1135,8 +1198,10 @@ function paintGo(){
 }
 function wheelEl(w){return document.getElementById(w==='h'?'wH':'wM');}
 function wheelVals(w){return w==='h'?H_VALS:M_VALS;}
+let wLast={};
 function wheelPaint(w,i){
  const L=wheelEl(w),vals=wheelVals(w);if(!L)return;
+ if(wLast[w]!==i){wLast[w]=i;sfx('tick');}   // 칸이 바뀔 때만. 스크롤마다 울면 소음이다
  L.querySelectorAll('i').forEach((e,k)=>{e.classList.toggle('on',k===i);
   e.classList.toggle('nr',Math.abs(k-i)===1);});   // 바로 옆은 덜 흐리게 — 어디가 중심인지 읽힌다
  L.setAttribute('aria-valuenow',vals[i]);
@@ -1183,7 +1248,7 @@ function pickMins(total){
   chops:out,color:nxC(),icon:pickIcon(cand.title),src:cand.src,tip:'',note:'',status:'ok'};
  document.getElementById('candScr').classList.remove('on');
  cand.step='pick';
- showRes();
+ sfx('go');showRes();
 }
 function closeCand(){document.getElementById('candScr').classList.remove('on','solo');goTab('p1',0);}
 function setKey(v){settings.apiKey=String(v||'').trim();save();}
@@ -1193,7 +1258,7 @@ function startLoad(title){
  document.querySelectorAll('.full,.pg').forEach(f=>f.classList.remove('on'));
  document.getElementById('resScr').classList.remove('on');
  cand={title:title,depth:0,items:[],src:'local',note:'',step:'pick'};
- openCand();loadCand();
+ sfx('chop');openCand();loadCand();
 }
 /* 여기 있던 AI 분해 경로는 챱챱 도입 후 return 뒤에 갇혀 한 줄도 실행되지 않았다. 진짜 경로는 loadCand()다. */
 // 결과는 세션 카드 한 장이다. 지금 탭에서 보게 될 그 모양 그대로 미리 보여준다.
@@ -1525,7 +1590,8 @@ let pdDeco=false,pdAdd=false;
 function toggleDeco(){pdDeco=!pdDeco;renderPD();}
 function setColor(i){const it=items.find(x=>x.id===editId);it.color=PAL[i];renderPD();renderAll();}
 function setIcon(nm){const it=items.find(x=>x.id===editId);it.icon=nm;renderPD();renderAll();}
-function toggleChop(i){const it=items.find(x=>x.id===editId);it.chops[i].done=!it.chops[i].done;renderPD();renderAll();}
+function toggleChop(i){const it=items.find(x=>x.id===editId);const on=!it.chops[i].done;
+ it.chops[i].done=on;sfx(on?'check':'untap');renderPD();renderAll();}
 function delChop(i,btn){const it=items.find(x=>x.id===editId);if(!ask('dc'+i,btn))return;it.chops.splice(i,1);renderPD();renderAll();}
 function closePD(){pdDeco=false;pdAdd=false;document.getElementById('pdScr').classList.remove('on');editId=null;}
 function delItem(id,btn,label){
@@ -1565,20 +1631,32 @@ function wakeAudio(){
   return actx;
  }catch(e){return null;}
 }
-// kind: 'up' 시간이 다 됨(내려가는 두 음) · 'done' 다 끝냄(올라가는 세 음)
-function chime(kind){
- const a=wakeAudio();if(!a)return;
- const seq=kind==='done'?[[659.3,0],[880,.16],[1174.7,.32]]:[[880,0],[659.3,.34]];
+// 음원 파일은 넣지 않는다. 전부 사인파다 — 한 음 = [주파수, 시작 지연, 길이, 세기, (미끄러질 끝음)].
+// 크기는 0.08을 넘기지 않는다. 조용한 방에서도 놀라지 않아야 한다.
+const SFX={
+ tap:  [[784,0,.10,.05]],                                     // 후보를 고름
+ untap:[[523.3,0,.09,.035]],                                  // 골랐던 걸 뗌
+ chop: [[1174.7,0,.13,.055,392]],                             // 칼질 — 위에서 아래로 미끄러진다
+ pop:  [[659.3,0,.09,.045],[987.8,.06,.14,.045]],             // 새 후보가 붙음
+ tick: [[1318.5,0,.035,.022]],                                // 휠 한 칸
+ go:   [[523.3,0,.13,.06],[784,.08,.22,.06]],                 // 시작한다
+ check:[[880,0,.10,.055],[1318.5,.07,.20,.05]],               // 찹 하나 끝냄
+ done: [[659.3,0,.18,.07],[880,.11,.18,.07],[1046.5,.22,.18,.07],
+        [1318.5,.33,.26,.075],[1760,.45,.60,.055]],           // 세션 전체 끝냄
+ up:   [[880,0,.34,.07],[659.3,.30,.55,.07]],                 // 시간이 다 됨
+};
+function sfx(name){
+ const a=wakeAudio(),seq=SFX[name];if(!a||!seq)return;
  const t0=a.currentTime+.02;
- seq.forEach(([f,dt])=>{
-  const o=a.createOscillator(),g=a.createGain();
-  o.type='sine';o.frequency.value=f;
-  const st=t0+dt;
+ seq.forEach(([f,dt,dur,vol,to])=>{
+  const o=a.createOscillator(),g=a.createGain(),st=t0+dt,en=st+dur;
+  o.type='sine';o.frequency.setValueAtTime(f,st);
+  if(to)o.frequency.exponentialRampToValueAtTime(to,en);
   g.gain.setValueAtTime(0.0001,st);
-  g.gain.exponentialRampToValueAtTime(0.08,st+.02);   // 작게 — 조용한 방에서도 놀라지 않을 크기
-  g.gain.exponentialRampToValueAtTime(0.0001,st+.85);
+  g.gain.exponentialRampToValueAtTime(vol,st+.015);
+  g.gain.exponentialRampToValueAtTime(0.0001,en+.05);
   o.connect(g);g.connect(a.destination);
-  o.start(st);o.stop(st+.9);
+  o.start(st);o.stop(en+.08);
  });
 }
 // 진동은 안드로이드 크롬만 된다. 아이폰 사파리는 무시한다 — 있으면 좋고 없어도 그만.
@@ -1719,13 +1797,14 @@ function nextChop(){
  const p=items.find(i=>i.id===pid);
  const nx=p&&p.chops?p.chops.find(c=>!c.done):null;
  if(!nx){sessionDone(pid);return;}
+ sfx('check');
  curNow={...nx,proj:p.name,pid:p.id,color:p.color,smin:p.sessionMin||30};
  document.getElementById('tmrTask').textContent=curNow.name;
  renderTmrProg();renderToday();
 }
 function sessionDone(pid){
  clearInterval(tInt);tmrPid=null;
- chime('done');buzz([60,60,60,60,140]);
+ sfx('done');buzz([60,60,60,60,140]);
  document.getElementById('tmr').classList.remove('on');
  const spent=Math.max(1,Math.round((tTotal-tSec)/60));
  const p=items.find(i=>i.id===pid);
@@ -1747,7 +1826,7 @@ function countUp(id,to,suffix){
 }
 function sessionUp(){
  clearInterval(tInt);
- chime('up');buzz([120,90,120]);
+ sfx('up');buzz([120,90,120]);
  document.getElementById('tmr').classList.remove('on');
  const cs=sessChops();const left=cs.filter(c=>!c.done).length;
  document.getElementById('upMsg').textContent=left
@@ -1763,7 +1842,7 @@ function extendTmr(min){
 }
 function closeUp(){document.getElementById('tmrUp').classList.remove('on');renderToday();}
 // 다른 세션이거나 시간이 다 됐을 때만 처음부터. 같은 세션으로 돌아오면 남은 시간을 이어 받는다.
-function startTmr(){if(!curNow)return;tPaused=false;wakeAudio();
+function startTmr(){if(!curNow)return;tPaused=false;wakeAudio();sfx('go');
  document.getElementById('tmrLbl').textContent='집중 중';
  document.getElementById('pauseBtn').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
  document.getElementById('tmrSrc').textContent=curNow.proj;
@@ -1780,7 +1859,7 @@ function startTmr(){if(!curNow)return;tPaused=false;wakeAudio();
 function runTmr(){clearInterval(tInt);tInt=setInterval(()=>{if(tPaused)return;
  tSec=Math.max(0,Math.round((tEnd-Date.now())/1000));
  if(tSec<=0){sessionUp();return;}updTD();updSeg();},1000);}
-function pauseTmr(){tPaused=!tPaused;if(!tPaused)setLeft(tSec);save();document.getElementById('tmrLbl').textContent=tPaused?'일시정지':'집중 중';document.getElementById('pauseBtn').innerHTML=tPaused?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';}
+function pauseTmr(){tPaused=!tPaused;sfx(tPaused?'untap':'tap');if(!tPaused)setLeft(tSec);save();document.getElementById('tmrLbl').textContent=tPaused?'일시정지':'집중 중';document.getElementById('pauseBtn').innerHTML=tPaused?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';}
 function updTD(){const h=Math.floor(tSec/3600),m=Math.floor(tSec%3600/60),s=tSec%60;
  const el=document.getElementById('tmrDisp');
  el.classList.toggle('hh',h>0);
@@ -1848,10 +1927,10 @@ function createItem(){const ti=document.getElementById('nTitle');const title=ti.
 // ===== SETTINGS =====
 function tgRow(label,sub,key){return '<div class="sprow"><div><div class="spl">'+label+'</div>'+(sub?'<div class="sps">'+sub+'</div>':'')+'</div><div class="tg '+(settings[key]?'on':'off')+'" onclick="tgSet(\''+key+'\',this)"></div></div>';}
 function tgSet(key,el){settings[key]=!settings[key];el.classList.toggle('on');el.classList.toggle('off');
- if(key==='snd'&&settings[key])chime('up');   // 켜면 바로 들려준다
+ if(key==='snd'&&settings[key])sfx('go');   // 켜면 바로 들려준다
  save();}
 function openSP(type){document.getElementById('spT').textContent=type;const c=document.getElementById('spB');
- if(type==='알림')c.innerHTML=tgRow('타이머 소리','시간이 다 되면 짧게 울려요','snd')
+ if(type==='알림')c.innerHTML=tgRow('효과음','고르고 끝낼 때 짧게 소리가 나요','snd')
   +tgRow('아침 알림','매일 오전 8:00','nM')+tgRow('저녁 리마인더','매일 오후 9:00','nE')+tgRow('주간 리뷰','매주 월요일','nW');
  else c.innerHTML='<div class="sprow" style="display:block;"><div class="spl">AI 분해</div><div class="sps" style="margin:2px 0 10px;">키를 넣으면 AI가 잘라요. 비워두면 기본 목록이 나와요</div><input class="inp" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-..." value="'+(settings.apiKey||'')+'" oninput="setKey(this.value)" aria-label="Anthropic API 키"><div class="sps" style="margin-top:2px;">키는 이 기기에만 저장돼요. 공용 PC에서는 넣지 마세요</div></div>';
  document.getElementById('spP').classList.add('on');}
