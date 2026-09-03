@@ -104,9 +104,9 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 /* 로코로코의 언덕. 곡선 지형이 그 게임 화면의 절반이다.
    세 탭 모두 같은 땅 위에 있다. background-attachment 기본값이라 목록을 굴려도 언덕은 화면 아래에 붙어 있다. */
 .pg{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>");
- background-repeat:no-repeat;--hill-y:var(--btab-h);animation:hills 19s ease-in-out infinite;}
+ background-repeat:no-repeat;--hill-y:var(--btab-h);animation:hills 11s ease-in-out infinite;}
 /* 결과 화면도 같은 땅 위에 둔다. 탭바가 없는 흐름 화면이라 바닥에 붙는다. */
-#resScr{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>");background-repeat:no-repeat;--hill-y:0px;animation:hills 19s ease-in-out infinite;}
+#resScr{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>");background-repeat:no-repeat;--hill-y:0px;animation:hills 11s ease-in-out infinite;}
 
 .btab{position:absolute;bottom:0;left:0;right:0;height:var(--btab-h);background:var(--bg);border-top:1px solid var(--line);
  display:flex;align-items:flex-start;justify-content:space-around;padding:var(--s1) var(--s6) env(safe-area-inset-bottom, 0px);z-index:40;}
@@ -392,13 +392,13 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 /* 로코로코 화면은 손을 떼도 계속 꿈틀거린다. 언덕이 아주 느리게 부풀었다 줄고 좌우로 흔들린다.
    폭을 104% 이상으로 두는 게 핵심 — 100%면 흔들 때 가장자리에 크림색 틈이 생긴다. */
 @keyframes hills{
- 0%,100%{background-size:106% auto;background-position:left calc(50% - 7px) bottom var(--hill-y);}
- 50%    {background-size:110% auto;background-position:left calc(50% + 7px) bottom var(--hill-y);}}
+ 0%,100%{background-size:106% auto;background-position:left calc(50% - 8px) bottom calc(var(--hill-y) - 15px);}
+ 50%    {background-size:114% auto;background-position:left calc(50% + 8px) bottom var(--hill-y);}}
 /* 타이머 방울도 숨을 쉰다. 도는 게 아니라 흔들리는 것이라 12시 끝점은 제자리에 있다 */
 @keyframes ringIdle{
- 0%,100%{transform:rotate(-2.2deg) scale(.994);}
- 50%    {transform:rotate(2.2deg) scale(1.008);}}
-.tmr-ring svg{animation:ringIdle 6.4s ease-in-out infinite;transform-origin:50% 50%;}
+ 0%,100%{transform:rotate(-3.6deg) scale(.985);}
+ 50%    {transform:rotate(3.6deg) scale(1.018);}}
+.tmr-ring svg{animation:ringIdle 5.2s ease-in-out infinite;transform-origin:50% 50%;}
 
 /* ===== 컨페티 ===== */
 /* 하루에 한 번 볼까 말까 한 장면이라 아낌없이 뿌린다. 조각마다 크기·색·속도·회전이 다르다 —
@@ -994,6 +994,14 @@ const CUTS=[            // [각도, 칼 시작, 컷선 id, 컷선 시작] — �
 const BURST_AT=1880;    // 조각이 흩어지고(1360) 0.5초 뒤 — 찹은 여기서 또 0.5초 뒤
 let slashAt=0,slashTimers=[];
 function slashLeft(){return Math.max(0,SLASH_MS-(Date.now()-slashAt));}
+// AI 응답을 기다리는 동안 칼질을 반복한다. 한 번 자르고 멈춰 서 있으면 "끝났는데 아무것도 안 나온"
+// 화면으로 읽힌다. 20초 타임아웃(aiCall2)이 상한이라 최대 일곱 번쯤 자르고 멈춘다.
+let chopTimer=0;
+function chopLoop(on){
+ clearTimeout(chopTimer);chopTimer=0;
+ if(!on)return;
+ chopTimer=setTimeout(()=>{slashAnim();sfx('chop');chopLoop(true);},SLASH_MS+80);
+}
 // 말풍선 한가운데에서 고르게 퍼뜨린다. 아무 데나 흩뿌리면 화면과 어긋나 보인다.
 function burst(st,count){
  for(let i=0;i<count;i++){
@@ -1084,14 +1092,20 @@ function renderCand(){
   ?cand.note
   :(cand.depth?'더 찾아왔어요':'해당되는 것만 고르세요');
 }
+// 사전이 아는 말이면 사전이 답한다 — 0초, 공짜, 매번 같은 문장.
+// 사전에 없는 말일 때만 AI를 부른다. "엔화 환전하기" 같은 건 미리 적어 둘 수 없다.
 function loadCand(){
  const hint=document.getElementById('candHint');
- hint.textContent=aiOn()?'AI가 쪼개는 중...':'쪼개는 중...';
  document.getElementById('candChips').innerHTML='';
- const useLocal=(note)=>{cand.items=genCandidates(cand.title,null);
+ const useLocal=(note)=>{chopLoop(false);cand.items=genCandidates(cand.title,null);
   cand.src='local';cand.note=note||'';cand.animNew=cand.items.length;cand.animBase=slashLeft();renderCand();};
- if(!aiOn()){useLocal('');return;}
+ const known=bankRows(cand.title.toLowerCase()).length>0;
+ hint.textContent='쪼개는 중...';
+ if(known||!aiOn()){useLocal('');return;}
+ hint.textContent='AI가 쪼개는 중...';
+ chopLoop(true);
  aiCandidates(cand.title).then(r=>{
+  chopLoop(false);
   if(r.status!=='ok'||!r.items.length){useLocal(r.message||'후보를 못 만들어서 기본 목록이에요');return;}
   cand.items=r.items;cand.src='ai';cand.note='';cand.animNew=r.items.length;cand.animBase=slashLeft();renderCand();
  }).catch(e=>useLocal('AI 호출 실패 · '+(e&&e.message?e.message:'오류')));
@@ -1103,12 +1117,15 @@ function chopMore(){
  cand.depth++;slashAnim();sfx('chop');
  const have=cand.items.map(c=>c.name);
  const hint=document.getElementById('candHint');
- hint.textContent=aiOn()?'더 찾아보는 중...':'더 찾아보는 중...';
- const addLocal=(note)=>{
+ hint.textContent='더 찾아보는 중...';
+ const addLocal=(note)=>{chopLoop(false);
   const more=genCandidates(cand.title,have);
   appendCand(more,note||(more.length?'':'더 나올 게 없어요'));};
- if(!aiOn()){setTimeout(()=>addLocal(''),450);return;}
+ // 첫 판을 사전이 냈으면 더 찾는 것도 사전이 낸다. AI가 냈으면 AI가 잇는다.
+ if(cand.src!=='ai'||!aiOn()){setTimeout(()=>addLocal(''),450);return;}
+ chopLoop(true);
  aiMoreCandidates(cand.title,have).then(r=>{
+  chopLoop(false);
   if(r.status!=='ok'||!r.items.length){addLocal(r.message||'');return;}
   cand.src='ai';appendCand(r.items,'');
  }).catch(e=>addLocal('AI 호출 실패 · '+(e&&e.message?e.message:'오류')));
@@ -1250,7 +1267,7 @@ function pickMins(total){
  cand.step='pick';
  sfx('go');showRes();
 }
-function closeCand(){document.getElementById('candScr').classList.remove('on','solo');goTab('p1',0);}
+function closeCand(){chopLoop(false);document.getElementById('candScr').classList.remove('on','solo');goTab('p1',0);}
 function setKey(v){settings.apiKey=String(v||'').trim();save();}
 function ob(n){document.querySelectorAll('.full').forEach(f=>f.classList.remove('on'));document.getElementById('ob'+n).classList.add('on');}
 // 로딩 화면은 없앴다. 말풍선이 갈라지는 연출이 그 자리를 대신한다.
