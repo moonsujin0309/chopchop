@@ -1,7 +1,7 @@
 // 찹찹 오프라인 캐시.
 // 지하철에서 열어도 백지가 되지 않게 하는 것이 전부다. 여기서 데이터를 다루지 않는다.
-const CACHE='chopchop-v1';
-const CORE=['./','./index.html','./icon.png','./icon-512.png','./manifest.webmanifest'];
+const CACHE='chopchop-v2';
+const CORE=['./','./index.html','./icon.png?v=2','./icon-512.png?v=2','./manifest.webmanifest'];
 
 self.addEventListener('install',e=>{
  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
