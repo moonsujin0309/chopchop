@@ -897,76 +897,40 @@ const GENERIC={
 // 이 프로토타입은 서버가 없어 브라우저에서 API를 직접 부릅니다.
 // 그래서 키를 코드에 넣지 않고, 사용자가 설정에서 자기 키를 넣어 이 기기에만 저장합니다.
 // 실서비스에서는 반드시 백엔드 프록시를 두고 키를 서버에 보관해야 합니다.
-const AI_MODEL='claude-opus-5';
-function aiKey(){return (settings.apiKey||'').trim();}
-function aiOn(){return aiKey().length>0;}
-
-// 모델이 코드펜스나 여는 말을 붙여도 살려내기 위한 방어적 파싱
-function aiParse(txt){
- let t=String(txt||'').trim();
- t=t.replace(/^```[a-zA-Z]*\s*/,'').replace(/```\s*$/,'').trim();
- const a=t.indexOf('{'),b=t.lastIndexOf('}');
- if(a<0||b<=a)throw new Error('JSON을 찾지 못했어요');
- return JSON.parse(t.slice(a,b+1));
-}
+// 앱은 Gemini를 직접 부르지 않는다. 키가 브라우저에 내려가면 누구나 훔쳐 쓰기 때문에,
+// 키도 프롬프트도 프록시(ChopChop/proxy/worker.js)에만 둔다.
+// 그래서 사용자가 설정에서 할 일이 없다 — 열면 그냥 돌아간다.
+const AI_URL='https://chopchop-ai.3690yz.workers.dev';
+function aiOn(){return true;}
 
 // ===== 챱챱: AI는 후보를 대고, 선택은 사용자가 한다 =====
 // 완성된 리스트를 통째로 주면 남의 삶을 아는 척하게 된다.
 // 후보를 넓게 뿌리고 고르게 하는 편이 정확하고, 고르는 행위 자체가 시작 관성을 만든다.
-const AI_SYS_CAND=`당신은 태스크 분해 앱 "찹찹"의 후보 생성기입니다.
-사용자가 지금 당장 시작해서 한 번에 끝내려는 일을 말하면, 그 일에 들어갈 법한 **행동 후보**를 넓게 제시합니다.
+// 시스템 프롬프트는 프록시(worker.js)가 들고 있다. 문구를 고칠 때 사이트를 다시 배포하지
+// 않아도 되고, 브라우저에서 바꿔치기할 수도 없다. 명세는 기획서/07_AI_후보생성_프롬프트.md.
 
-# 핵심
-당신은 최종 목록을 정하지 않습니다. 사용자가 고를 **선택지**를 만듭니다.
-그래서 필요한 것보다 넉넉히, 서로 겹치지 않게 제시하세요.
-사용자의 집이 어떤지 루틴이 뭔지 당신은 모릅니다. 아는 척하지 말고 선택지를 주세요.
+async function aiCandidates(title){return toCand(await aiCall2({title}));}
 
-# 후보 작성 규칙
-1. 10~14개. 동사로 끝낸다("…하기").
-2. 누구나 아는 보편적이고 구체적인 행동으로 쓴다.
-   O "세안하기" "양치하기" "영양제 먹기" "내일 입을 옷 꺼내두기"
-   X "잠자기 전 준비 준비하기" "핵심 작업 진행하기"
-3. **제목을 되풀이하지 않는다. 속 빈 동사(준비/진행/마무리/점검)만으로 만들지 않는다.**
-4. 이름은 한글 20자 이하.
-5. 한 후보는 5~15분짜리로 둔다. 30분 넘는 덩어리는 후보로 내지 않는다.
-   minutes는 실제로 걸리는 시간을 정직하게. 10분 미만은 1분 단위(영양제 먹기 2분, 양치하기 3분),
-   10분 이상은 5분 단위. 짧은 일을 5분으로 올리지 않는다.
-6. 흔한 것부터 덜 흔한 것 순으로 놓는다. 사람마다 다를 법한 것도 넣되 뒤쪽에 둔다.
-7. 서로 포함관계가 되지 않게 한다.
-8. **하나의 후보 = 하나의 행동.** "…하고 …하기"처럼 두 가지를 묶지 않는다.
-   X "씻고 정리 끝내기" "분류하고 세탁 돌리기"
-   O "세안하기" / "옷 정리하기" / "빨랫감 분류하기" / "세탁기 돌리기"
-
-# 예외
-너무 모호해 후보를 못 만들면 {"status":"too_vague","candidates":[],"message":"되물을 질문 한 문장"}
-
-# 출력 형식 (JSON만, 코드펜스 금지)
-{"status":"ok","candidates":[{"name":"세안하기","minutes":5}]}`;
-
-async function aiCandidates(title){
- const u='제목: '+title+'\n사용자가 지금 당장 시작해서 한 번에 끝내려는 일입니다.';
- const d=await aiCall2(u,1);
+// 프록시가 {status,candidates,message}로 정리해 준다. 그래도 앱 쪽 규칙(28자·snapMin)을
+// 한 번 더 건다 — 프록시를 믿되, 화면에 들어오는 값은 앱이 책임진다.
+function toCand(d){
  const list=(Array.isArray(d.candidates)?d.candidates:[]).filter(c=>c&&c.name).map(c=>({
   name:String(c.name).trim().slice(0,28),
   minutes:snapMin(c.minutes||10),sel:false}));
  return {status:d.status||'ok',items:list,message:String(d.message||'')};
 }
-async function aiCall2(user,retries){
- const ac=new AbortController(),to=setTimeout(()=>ac.abort(),20000);
+
+// 프록시는 최악 24초까지 쓴다(12초짜리 두 번). 그래서 여기는 25초에서 끊는다.
+async function aiCall2(body){
+ const ac=new AbortController(),to=setTimeout(()=>ac.abort(),25000);
  let res;
- try{res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',signal:ac.signal,
-  headers:{'content-type':'application/json','x-api-key':aiKey(),
-   'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-  body:JSON.stringify({model:AI_MODEL,max_tokens:4000,output_config:{effort:'low'},
-   system:AI_SYS_CAND,messages:[{role:'user',content:user}]})});}
+ try{res=await fetch(AI_URL,{method:'POST',signal:ac.signal,
+  headers:{'content-type':'application/json'},body:JSON.stringify(body)});}
  catch(e){throw new Error(ac.signal.aborted?'응답이 늦어요':'네트워크 오류');}
  finally{clearTimeout(to);}
- if(!res.ok){let d='';try{d=(await res.text()).slice(0,140);}catch(e){}
-  throw new Error('API '+res.status+(d?' · '+d:''));}
- const j=await res.json();
- const txt=(j.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
- try{return aiParse(txt);}
- catch(err){if(retries>0)return aiCall2(user+'\n\n반드시 JSON 객체 하나만 출력하세요.',retries-1);throw err;}
+ let j=null;try{j=await res.json();}catch(e){}
+ if(!res.ok||!j)throw new Error((j&&j.message)||('오류 '+res.status));
+ return j;
 }
 // 폴백: 사전에서 후보를 넓게 뽑는다(60분 상한을 걸지 않는다 — 고르는 건 사용자다)
 const EXTRA=[['타이머 맞추기',1],['방해되는 것 치우기',3],['물 한 잔 떠다 두기',2],
@@ -1152,21 +1116,8 @@ function appendCand(list,note){
  cand.items=fresh.concat(cand.items);
  cand.note=note||'';renderCand();sfx('pop');
 }
-async function aiMoreCandidates(title,have){
- let u='제목: '+title+'\n사용자가 지금 당장 시작해서 한 번에 끝내려는 일입니다.';
- u+='\n이미 보여준 후보: '+have.join(' / ');
- u+='\n위와 겹치지 않는 다른 각도의 후보를 더 주세요. 6~10개.'
-  +'\n이미 보여준 것을 품는 묶음(예: "씻고 정리 끝내기")은 절대 넣지 마세요.'
-  +'\n하나의 후보는 하나의 행동입니다. "…하고 …하기"를 쓰지 마세요.'
-  +'\n반드시 "'+title+'" 안에서만 찾으세요. 이 일과 직접 상관없는 일반적인 행동'
-  +'(타이머 맞추기, 음악 틀기, 기록 남기기 같은 것)은 넣지 마세요.'
-  +'\n더 낼 게 없으면 억지로 채우지 말고 적게 주세요.';
- const d=await aiCall2(u,1);
- const list=(Array.isArray(d.candidates)?d.candidates:[]).filter(c=>c&&c.name).map(c=>({
-  name:String(c.name).trim().slice(0,28),
-  minutes:snapMin(c.minutes||10),sel:false}));
- return {status:d.status||'ok',items:list,message:String(d.message||'')};
-}
+async function aiMoreCandidates(title,have){return toCand(await aiCall2({title,have}));}
+
 // 찹마다 시간을 정하면 합계가 실제보다 한참 부풀려진다.
 // 사용자가 아는 것은 "이걸 30분 안에 끝내겠다" 하나뿐이라, 그것만 묻고 비율로 나눈다.
 function candDone(){
@@ -1281,7 +1232,6 @@ function pickMins(total){
  sfx('go');showRes();
 }
 function closeCand(){chopLoop(false);document.getElementById('candScr').classList.remove('on','solo');goTab('p1',0);}
-function setKey(v){settings.apiKey=String(v||'').trim();save();}
 function ob(n){document.querySelectorAll('.full').forEach(f=>f.classList.remove('on'));document.getElementById('ob'+n).classList.add('on');}
 // 로딩 화면은 없앴다. 말풍선이 갈라지는 연출이 그 자리를 대신한다.
 function startLoad(title){
@@ -1962,7 +1912,8 @@ function tgSet(key,el){settings[key]=!settings[key];el.classList.toggle('on');el
 function openSP(type){document.getElementById('spT').textContent=type;const c=document.getElementById('spB');
  if(type==='알림')c.innerHTML=tgRow('효과음','고르고 끝낼 때 짧게 소리가 나요','snd')
   +tgRow('아침 알림','매일 오전 8:00','nM')+tgRow('저녁 리마인더','매일 오후 9:00','nE')+tgRow('주간 리뷰','매주 월요일','nW');
- else c.innerHTML='<div class="sprow" style="display:block;"><div class="spl">AI 분해</div><div class="sps" style="margin:2px 0 10px;">키를 넣으면 AI가 잘라요. 비워두면 기본 목록이 나와요</div><input class="inp" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-..." value="'+(settings.apiKey||'')+'" oninput="setKey(this.value)" aria-label="Anthropic API 키"><div class="sps" style="margin-top:2px;">키는 이 기기에만 저장돼요. 공용 PC에서는 넣지 마세요</div></div>';
+ else c.innerHTML='<div class="sprow"><div><div class="spl">AI 분해</div>'
+  +'<div class="sps">사전에 없는 일은 AI가 후보를 만들어요. 따로 설정할 건 없어요</div></div></div>';
  document.getElementById('spP').classList.add('on');}
 function closeSP(){document.getElementById('spP').classList.remove('on');}
 // ===== PERSISTENCE =====
