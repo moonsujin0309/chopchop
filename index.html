@@ -103,10 +103,10 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 #p1.nofab{padding-bottom:calc(var(--btab-h) + 24px);}   /* 세션이 없으면 그 버튼도 없다 */
 /* 로코로코의 언덕. 곡선 지형이 그 게임 화면의 절반이다.
    세 탭 모두 같은 땅 위에 있다. background-attachment 기본값이라 목록을 굴려도 언덕은 화면 아래에 붙어 있다. */
-.pg{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>");
- background-repeat:no-repeat;--hill-y:var(--btab-h);animation:hills 11s ease-in-out infinite;}
+.pg{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>"),url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/></svg>"),url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/></svg>");background-repeat:no-repeat;background-size:112% auto,116% auto,120% auto;
+ --hill-y:var(--btab-h);animation:hills 13s linear infinite;}
 /* 결과 화면도 같은 땅 위에 둔다. 탭바가 없는 흐름 화면이라 바닥에 붙는다. */
-#resScr{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>");background-repeat:no-repeat;--hill-y:0px;animation:hills 11s ease-in-out infinite;}
+#resScr{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 190C78 160 138 196 232 182C296 172 338 192 375 180L375 215L0 215Z' fill='%23CFEA95'/></svg>"),url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 156C64 108 118 154 196 148C268 142 316 168 375 132L375 215L0 215Z' fill='%23E9F6C6'/></svg>"),url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 215'><path d='M0 108C52 44 104 40 158 84C214 130 286 148 375 96L375 215L0 215Z' fill='%23FFF0C2'/></svg>");background-repeat:no-repeat;background-size:112% auto,116% auto,120% auto;--hill-y:0px;animation:hills 13s linear infinite;}
 
 .btab{position:absolute;bottom:0;left:0;right:0;height:var(--btab-h);background:var(--bg);border-top:1px solid var(--line);
  display:flex;align-items:flex-start;justify-content:space-around;padding:var(--s1) var(--s6) env(safe-area-inset-bottom, 0px);z-index:40;}
@@ -391,14 +391,27 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 
 /* 로코로코 화면은 손을 떼도 계속 꿈틀거린다. 언덕이 아주 느리게 부풀었다 줄고 좌우로 흔들린다.
    폭을 104% 이상으로 두는 게 핵심 — 100%면 흔들 때 가장자리에 크림색 틈이 생긴다. */
+/* 겹마다 파동 수가 다르다(앞 3 · 가운데 2 · 뒤 1). 정수라 13초에 딱 이어진다.
+   값은 tools/make_hills_css.py가 뽑는다 — 손으로 고치지 말고 거기서 다시 뽑는다.
+   세로는 기준선에서 가라앉는 쪽으로만 — 위로 올리면 언덕 밑에 크림색 띠가 생긴다. */
 @keyframes hills{
- 0%,100%{background-size:106% auto;background-position:left calc(50% - 8px) bottom calc(var(--hill-y) - 15px);}
- 50%    {background-size:114% auto;background-position:left calc(50% + 8px) bottom var(--hill-y);}}
+ 0%{background-position:left calc(50% + 0.0px) bottom calc(var(--hill-y) - 0.0px), left calc(50% + 0.0px) bottom calc(var(--hill-y) - 0.0px), left calc(50% + 0.0px) bottom calc(var(--hill-y) - 0.0px);}
+ 12.5%{background-position:left calc(50% + 13.0px) bottom calc(var(--hill-y) - 17.1px), left calc(50% + 7.1px) bottom calc(var(--hill-y) - 13.5px), left calc(50% + 11.3px) bottom calc(var(--hill-y) - 5.0px);}
+ 25%{background-position:left calc(50% + 0.0px) bottom calc(var(--hill-y) - 10.0px), left calc(50% - 10.0px) bottom calc(var(--hill-y) - 27.0px), left calc(50% + 16.0px) bottom calc(var(--hill-y) - 17.0px);}
+ 37.5%{background-position:left calc(50% - 13.0px) bottom calc(var(--hill-y) - 2.9px), left calc(50% + 7.1px) bottom calc(var(--hill-y) - 13.5px), left calc(50% + 11.3px) bottom calc(var(--hill-y) - 29.0px);}
+ 50%{background-position:left calc(50% - 0.0px) bottom calc(var(--hill-y) - 20.0px), left calc(50% + 0.0px) bottom calc(var(--hill-y) - 0.0px), left calc(50% + 0.0px) bottom calc(var(--hill-y) - 34.0px);}
+ 62.5%{background-position:left calc(50% + 13.0px) bottom calc(var(--hill-y) - 2.9px), left calc(50% - 7.1px) bottom calc(var(--hill-y) - 13.5px), left calc(50% - 11.3px) bottom calc(var(--hill-y) - 29.0px);}
+ 75%{background-position:left calc(50% + 0.0px) bottom calc(var(--hill-y) - 10.0px), left calc(50% + 10.0px) bottom calc(var(--hill-y) - 27.0px), left calc(50% - 16.0px) bottom calc(var(--hill-y) - 17.0px);}
+ 87.5%{background-position:left calc(50% - 13.0px) bottom calc(var(--hill-y) - 17.1px), left calc(50% - 7.1px) bottom calc(var(--hill-y) - 13.5px), left calc(50% - 11.3px) bottom calc(var(--hill-y) - 5.0px);}
+ 100%{background-position:left calc(50% - 0.0px) bottom calc(var(--hill-y) - 0.0px), left calc(50% - 0.0px) bottom calc(var(--hill-y) - 0.0px), left calc(50% - 0.0px) bottom calc(var(--hill-y) - 0.0px);}
+}
 /* 타이머 방울도 숨을 쉰다. 도는 게 아니라 흔들리는 것이라 12시 끝점은 제자리에 있다 */
 @keyframes ringIdle{
- 0%,100%{transform:rotate(-3.6deg) scale(.985);}
- 50%    {transform:rotate(3.6deg) scale(1.018);}}
-.tmr-ring svg{animation:ringIdle 5.2s ease-in-out infinite;transform-origin:50% 50%;}
+ 0%,100%{transform:rotate(-4.5deg) scale(1.028,.972);}
+ 28%    {transform:rotate(2deg)    scale(.968,1.034);}
+ 55%    {transform:rotate(5deg)    scale(1.022,.984);}
+ 78%    {transform:rotate(-1deg)   scale(.984,1.016);}}
+.tmr-ring svg{animation:ringIdle 4.6s ease-in-out infinite;transform-origin:50% 50%;}
 
 /* ===== 컨페티 ===== */
 /* 하루에 한 번 볼까 말까 한 장면이라 아낌없이 뿌린다. 조각마다 크기·색·속도·회전이 다르다 —
@@ -578,7 +591,7 @@ body{font-family:var(--font);background:var(--bg);display:flex;justify-content:c
 :focus-visible{outline:3px solid var(--greenD);outline-offset:2px;border-radius:4px;}
 @media (prefers-reduced-motion:reduce){
  .knife,.spark,.cfp,.cfb{display:none!important;}
- .pg,#resScr{background-size:100% auto;background-position:center bottom var(--hill-y);}
+ .pg,#resScr{background-position:center bottom var(--hill-y);}
  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
 </style>
 </head>
